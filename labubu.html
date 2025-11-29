@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LABUBU</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            --card-bg: rgba(30, 41, 59, 0.4);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --glass-blur: blur(12px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .wallet-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(4px);
+        }
+
+        .wallet-btn.connected {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: var(--glass-blur);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* 2 columns */
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .stat-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 12px 4px;
+            /* Reduced horizontal padding */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .stat-item.full-width {
+            grid-column: span 2;
+            /* Span full width */
+            flex-direction: row;
+            /* Horizontal layout for full width */
+            justify-content: space-between;
+            padding: 12px 16px;
+        }
+
+        .stat-item.full-width .stat-label {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+
+        .stat-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 0;
+        }
+
+        /* Reward Section */
+        .reward-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+            flex: 0 0 auto;
+        }
+
+        .reward-amount {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 6px 0 16px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .full-width-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 14px;
+        }
+
+        /* Bottom Grid */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            /* Give more space to Staking */
+            gap: 10px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .bottom-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            padding: 14px;
+        }
+
+        /* Staking Grid inside Card */
+        .staking-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            flex: 1;
+            align-content: center;
+        }
+
+        .staking-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 8px;
+        }
+
+        .staking-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .staking-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: #e2e8f0;
+            font-family: 'SF Mono', monospace;
+            letter-spacing: -0.3px;
+            word-break: break-all;
+        }
+
+        /* Redemption Card */
+        .warning-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .warning-title {
+            font-size: 10px;
+            color: #fca5a5;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .warning-list {
+            font-size: 9px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .warning-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid var(--card-border);
+            width: 80%;
+            max-width: 300px;
+            padding: 24px;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Mobile Optimization for Small Screens (iPhone SE/5/6/7/8) */
+        @media (max-height: 700px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                margin-bottom: 10px;
+            }
+
+            .logo img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .logo-text {
+                font-size: 16px;
+            }
+
+            .wallet-btn {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+
+            /* Compact Earnings Card */
+            .reward-card {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .reward-icon {
+                font-size: 24px;
+                margin-bottom: 4px;
+            }
+
+            .reward-amount {
+                font-size: 24px;
+                margin: 4px 0 8px;
+            }
+
+            .reward-label {
+                font-size: 10px;
+            }
+
+            /* Compact Stats */
+            .stats-grid {
+                gap: 8px;
+                margin-bottom: 10px;
+            }
+
+            .stat-item {
+                padding: 8px 4px;
+            }
+
+            .stat-value {
+                font-size: 12px;
+            }
+
+            /* Compact Bottom Grid */
+            .bottom-grid {
+                gap: 8px;
+            }
+
+            .bottom-card {
+                padding: 10px;
+            }
+
+            .card-title {
+                font-size: 11px;
+                margin-bottom: 8px;
+            }
+
+            .staking-info-grid {
+                gap: 6px;
+            }
+
+            .staking-item {
+                padding: 6px;
+            }
+
+            .staking-label {
+                font-size: 9px;
+            }
+
+            .staking-value {
+                font-size: 11px;
+            }
+
+            .warning-container {
+                padding: 8px;
+                margin-bottom: 8px;
+            }
+
+            .warning-title {
+                font-size: 9px;
+            }
+
+            .warning-list {
+                font-size: 8px;
+            }
+
+            .btn {
+                padding: 8px;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-height: 600px) {
+
+            /* Ultra compact for iPhone 4/5/SE 1st gen */
+            .header {
+                margin-bottom: 6px;
+            }
+
+            .reward-card {
+                padding: 8px;
+                margin-bottom: 8px;
+            }
+
+            .reward-icon {
+                font-size: 20px;
+            }
+
+            .reward-amount {
+                font-size: 20px;
+                margin: 2px 0 6px;
+            }
+
+            .stats-grid {
+                margin-bottom: 8px;
+            }
+
+            .stat-item {
+                padding: 6px 2px;
+            }
+
+            .bottom-card {
+                padding: 8px;
+            }
+
+            .card-title {
+                margin-bottom: 6px;
+            }
+
+            .staking-item {
+                padding: 4px;
+            }
+
+            .staking-value {
+                font-size: 10px;
+            }
+
+            .warning-container {
+                padding: 6px;
+                margin-bottom: 6px;
+            }
+
+            .warning-list {
+                line-height: 1.3;
+            }
+
+            /* iPhone 4 Specific (480px height) */
+            @media (max-height: 480px) {
+                .container {
+                    padding: 6px;
+                }
+
+                .header {
+                    margin-bottom: 4px;
+                }
+
+                .logo img {
+                    width: 24px;
+                    height: 24px;
+                }
+
+                .logo-text {
+                    font-size: 14px;
+                }
+
+                .wallet-btn {
+                    padding: 4px 8px;
+                    font-size: 10px;
+                }
+
+                .reward-card {
+                    padding: 6px;
+                    margin-bottom: 6px;
+                }
+
+                .reward-icon {
+                    font-size: 16px;
+                    margin-bottom: 2px;
+                }
+
+                .reward-amount {
+                    font-size: 18px;
+                    margin: 2px 0 4px;
+                }
+
+                .reward-label {
+                    font-size: 9px;
+                }
+
+                .stats-grid {
+                    gap: 6px;
+                    margin-bottom: 6px;
+                }
+
+                .stat-item {
+                    padding: 4px 2px;
+                }
+
+                .stat-label {
+                    font-size: 9px;
+                }
+
+                .stat-value {
+                    font-size: 11px;
+                }
+
+                .bottom-grid {
+                    gap: 6px;
+                }
+
+                .bottom-card {
+                    padding: 6px;
+                }
+
+                .card-title {
+                    font-size: 10px;
+                    margin-bottom: 4px;
+                }
+
+                .staking-info-grid {
+                    gap: 4px;
+                }
+
+                .staking-item {
+                    padding: 2px;
+                }
+
+                .staking-label {
+                    font-size: 8px;
+                    margin-bottom: 2px;
+                }
+
+                .staking-value {
+                    font-size: 9px;
+                }
+
+                .warning-container {
+                    padding: 4px;
+                    margin-bottom: 4px;
+                }
+
+                .warning-title {
+                    font-size: 8px;
+                }
+
+                /* 2-column layout for burn rules on small screens */
+                .warning-list {
+                    font-size: 8px;
+                    line-height: 1.2;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 2px 8px;
+                }
+
+                .warning-row {
+                    margin-bottom: 0;
+                }
+
+                .btn {
+                    padding: 4px;
+                    font-size: 10px;
+                }
+            }
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container>* {
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .container>*:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .container>*:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <img src="https://i.111666.best/image/1kFqGAUlk1uail3U4c6YSQ.jpg" alt="LABUBU">
+                <span>LABUBU</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn wallet-btn" id="connect-btn" onclick="connectWallet()">
+                    <span id="wallet-status">连接钱包</span>
+                </button>
+                <button class="btn btn-danger hidden" id="disconnect-btn" onclick="showDisconnectModal()">
+                    断开
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">现价 (USD)</div>
+                <div class="stat-value">$<span id="token-price-usd">0.00</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">LP 持有人</div>
+                <div class="stat-value" id="lp-holder-count">0</div>
+            </div>
+            <div class="stat-item full-width">
+                <div class="stat-label">已销毁</div>
+                <div class="stat-value" id="burned-amount">0</div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Reward Section -->
+            <div class="card reward-card">
+                <div class="card-title">💰 我的收益</div>
+                <div class="reward-info">
+                    <span style="color: var(--text-secondary)">待领取奖励</span>
+                </div>
+                <div class="reward-amount" id="my-rewards">0.0000</div>
+
+                <div class="info-item" style="margin-bottom: 12px;">
+                    <span>钱包余额</span>
+                    <span id="wallet-balance">0.0000</span>
+                </div>
+
+                <button class="btn btn-primary full-width-btn" onclick="claimRewards()">
+                    领取奖励
+                </button>
+            </div>
+
+            <!-- Bottom Grid: Staking & Withdraw -->
+            <div class="bottom-grid">
+                <!-- Staking Info -->
+                <div class="card bottom-card">
+                    <div class="card-title">📊 质押详情</div>
+                    <div class="staking-info-grid">
+                        <div class="staking-item">
+                            <div class="staking-label">LP 余额</div>
+                            <div class="staking-value" id="my-lp-balance">0.0000</div>
+                        </div>
+                        <div class="staking-item">
+                            <div class="staking-label">质押时间</div>
+                            <div class="staking-value" id="stake-time" style="font-size: 10px;">--</div>
+                        </div>
+                        <div class="staking-item">
+                            <div class="staking-label">已购买</div>
+                            <div class="staking-value" id="purchased-amount">0 OKB</div>
+                        </div>
+                        <div class="staking-item">
+                            <div class="staking-label">剩余额度</div>
+                            <div class="staking-value" id="remaining-amount">0 OKB</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Withdraw Section -->
+                <div class="card bottom-card">
+                    <div class="card-title">🔓 赎回管理</div>
+                    <div class="warning-container">
+                        <div class="warning-title">⚠️ 销毁规则</div>
+                        <div class="warning-list">
+                            <div class="warning-row"><span>&lt;30天</span><span>100%</span></div>
+                            <div class="warning-row"><span>30-60天</span><span>80%</span></div>
+                            <div class="warning-row"><span>60-90天</span><span>60%</span></div>
+                            <div class="warning-row"><span>90-120天</span><span>40%</span></div>
+                            <div class="warning-row"><span>120-150天</span><span>20%</span></div>
+                            <div class="warning-row"><span>&gt;150天</span><span>10%</span></div>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger full-width-btn" onclick="withdrawLP()"
+                        style="margin-top: auto; font-size: 12px; padding: 8px;">
+                        赎回 LP
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disconnect Modal -->
+    <div id="disconnectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">断开连接</div>
+            <p style="color: var(--text-secondary); font-size: 12px;">确定要断开钱包连接吗？</p>
+            <div class="modal-actions">
+                <button class="btn" style="background: var(--border-color)" onclick="closeDisconnectModal()">取消</button>
+                <button class="btn btn-danger" onclick="confirmDisconnect()">断开</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ethers.js 相关变量
+        let provider;
+        let signer;
+        let contract;
+        let userAccount;
+
+        // 从合约获取的动态配置
+        let contractMaxAmount = 10;
+        let okbPriceUSD = 170;
+
+        // 合约地址和 ABI
+        const CONTRACT_ADDRESS = '0x01754f7bB2dd55f35159fE12b0b4B1811F90999A';
+
+        const CONTRACT_ABI = [
+            "function balanceOf(address account) view returns (uint256)",
+            "function userStakedInfo(address) view returns (uint256 liquidity, uint256 updatedAt)",
+            "function earned(address director) view returns (uint256)",
+            "function lpHolder() view returns (uint256)",
+            "function totalStakedLiquidity() view returns (uint256)",
+            "function withdraw() external",
+            "function claimReward() external",
+            "function accountSales(address) view returns (uint256)",
+            "function maxAmount() view returns (uint256)",
+            "function minAmount() view returns (uint256)",
+            "function uniswapPair() view returns (address)",
+            "function consult(address token, uint256 amountIn) view returns (uint256 amountOut)"
+        ];
+
+        const PAIR_ABI = [
+            "function getReserves() view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
+            "function token0() view returns (address)",
+            "function token1() view returns (address)",
+            "function totalSupply() view returns (uint256)"
+        ];
+
+        const EXPECTED_CHAIN_ID = '0xC4';
+
+        // 显示断开连接确认模态框
+        function showDisconnectModal() {
+            document.getElementById('disconnectModal').style.display = 'flex';
+        }
+
+        // 关闭断开连接模态框
+        function closeDisconnectModal() {
+            document.getElementById('disconnectModal').style.display = 'none';
+        }
+
+        // 确认断开连接
+        function confirmDisconnect() {
+            closeDisconnectModal();
+            disconnectWallet();
+        }
+
+        // 点击模态框外部关闭
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('disconnectModal');
+            if (event.target === modal) {
+                closeDisconnectModal();
+            }
+        });
+
+        // 断开钱包连接
+        function disconnectWallet() {
+            userAccount = null;
+            provider = null;
+            signer = null;
+            contract = null;
+
+            const connectBtn = document.getElementById('connect-btn');
+            const disconnectBtn = document.getElementById('disconnect-btn');
+            const walletStatus = document.getElementById('wallet-status');
+
+            if (connectBtn) {
+                connectBtn.classList.remove('connected');
+            }
+            if (disconnectBtn) {
+                disconnectBtn.classList.add('hidden');
+            }
+            if (walletStatus) {
+                walletStatus.textContent = '连接钱包';
+            }
+
+            // 清空用户数据显示
+            document.getElementById('my-lp-balance').textContent = '0.0000';
+            document.getElementById('my-rewards').textContent = '0.0000';
+            document.getElementById('stake-time').textContent = '--';
+            document.getElementById('purchased-amount').textContent = '0 OKB';
+            document.getElementById('remaining-amount').textContent = '0 OKB';
+            document.getElementById('wallet-balance').textContent = '0.0000';
+
+            showNotification('钱包已断开连接', 'info');
+        }
+
+        // 连接钱包
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                showNotification('请先安装 MetaMask 钱包！', 'warning');
+                setTimeout(() => {
+                    window.open('https://metamask.io/download/', '_blank');
+                }, 1000);
+                return;
+            }
+
+            if (typeof ethers === 'undefined') {
+                showNotification('正在加载必要的库，请稍后重试...', 'warning');
+                return;
+            }
+
+            try {
+                const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                userAccount = await signer.getAddress();
+
+                const connectBtn = document.getElementById('connect-btn');
+                const disconnectBtn = document.getElementById('disconnect-btn');
+                const walletStatus = document.getElementById('wallet-status');
+
+                if (walletStatus) {
+                    walletStatus.textContent = `${userAccount.substring(0, 6)}...${userAccount.substring(38)}`;
+                }
+                if (connectBtn) {
+                    connectBtn.classList.add('connected');
+                }
+                if (disconnectBtn) {
+                    disconnectBtn.classList.remove('hidden');
+                    disconnectBtn.style.display = 'inline-flex'; // Ensure it shows correctly
+                }
+
+                contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+                await checkNetwork();
+                await loadContractConfig();
+                await loadUserData();
+                setupEventListeners();
+
+                showNotification('钱包连接成功！', 'success');
+            } catch (error) {
+                console.error('连接钱包失败:', error);
+                if (error.code === 4001) {
+                    showNotification('用户取消了连接请求', 'warning');
+                } else if (error.code === -32002) {
+                    showNotification('请在 MetaMask 中处理待处理的请求', 'warning');
+                } else {
+                    showNotification('连接失败: ' + (error.message || '未知错误'), 'error');
+                }
+            }
+        }
+
+        // 检查网络
+        async function checkNetwork() {
+            try {
+                const network = await provider.getNetwork();
+                const chainId = '0x' + network.chainId.toString(16);
+
+                if (chainId !== EXPECTED_CHAIN_ID) {
+                    await switchNetwork();
+                }
+            } catch (error) {
+                console.error('检查网络失败:', error);
+            }
+        }
+
+        // 切换网络
+        async function switchNetwork() {
+            try {
+                await ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: EXPECTED_CHAIN_ID }],
+                });
+                showNotification('已切换到 X Layer 网络', 'success');
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    try {
+                        await ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: EXPECTED_CHAIN_ID,
+                                chainName: 'X Layer Mainnet',
+                                nativeCurrency: {
+                                    name: 'OKB',
+                                    symbol: 'OKB',
+                                    decimals: 18
+                                },
+                                rpcUrls: ['https://rpc.xlayer.tech'],
+                                blockExplorerUrls: ['https://www.okx.com/web3/explorer/xlayer']
+                            }]
+                        });
+                        showNotification('X Layer 网络已添加并切换', 'success');
+                    } catch (addError) {
+                        showNotification('请手动添加 X Layer 网络！', 'warning');
+                    }
+                } else {
+                    showNotification('请手动切换到 X Layer 网络！', 'warning');
+                }
+            }
+        }
+
+        // 监听账户和网络变化
+        function setupEventListeners() {
+            ethereum.on('accountsChanged', async (accounts) => {
+                if (accounts.length === 0) {
+                    disconnectWallet();
+                } else if (accounts[0] !== userAccount) {
+                    userAccount = accounts[0];
+                    signer = provider.getSigner();
+                    contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+                    const walletStatus = document.getElementById('wallet-status');
+                    if (walletStatus) {
+                        walletStatus.textContent = `${userAccount.substring(0, 6)}...${userAccount.substring(38)}`;
+                    }
+
+                    await Promise.all([
+                        loadContractConfig(),
+                        loadUserData()
+                    ]);
+                    showNotification('账户已切换！', 'info');
+                }
+            });
+
+            ethereum.on('chainChanged', (chainId) => {
+                showNotification('网络已切换，页面将刷新...', 'info');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            });
+        }
+
+        // 加载合约配置
+        async function loadContractConfig() {
+            if (!contract) return;
+
+            try {
+                const maxAmount = await contract.maxAmount();
+                contractMaxAmount = parseFloat(ethers.utils.formatEther(maxAmount));
+            } catch (error) {
+                console.error('加载合约配置失败:', error);
+            }
+        }
+
+        // 领取奖励
+        async function claimRewards() {
+            if (!userAccount || !contract) {
+                showNotification('请先连接钱包！', 'warning');
+                return;
+            }
+
+            try {
+                const rewards = await contract.earned(userAccount);
+                if (rewards.isZero()) {
+                    showNotification('暂无可领取的奖励', 'info');
+                    return;
+                }
+
+                showNotification('正在领取奖励...', 'info');
+
+                const tx = await contract.claimReward();
+                showNotification('等待交易确认...', 'info');
+                await tx.wait();
+
+                const rewardAmount = ethers.utils.formatEther(rewards);
+                showNotification(`成功领取 ${parseFloat(rewardAmount).toFixed(6)} LABUBU！`, 'success');
+
+                await loadUserData();
+            } catch (error) {
+                console.error('领取失败:', error);
+                if (error.code === 4001) {
+                    showNotification('交易已取消', 'warning');
+                } else {
+                    showNotification('领取失败: ' + (error.reason || error.message), 'error');
+                }
+            }
+        }
+
+        // 提取 LP
+        async function withdrawLP() {
+            if (!userAccount || !contract) {
+                showNotification('请先连接钱包！', 'warning');
+                return;
+            }
+
+            try {
+                const stakedInfo = await contract.userStakedInfo(userAccount);
+                if (stakedInfo.liquidity.isZero()) {
+                    showNotification('您还没有质押 LP！', 'info');
+                    return;
+                }
+
+                const stakedTime = stakedInfo.updatedAt.toNumber();
+                const currentTime = Math.floor(Date.now() / 1000);
+                const daysPassed = Math.floor((currentTime - stakedTime) / 86400);
+
+                let burnRate = 100;
+                if (daysPassed < 30) burnRate = 100;
+                else if (daysPassed < 60) burnRate = 80;
+                else if (daysPassed < 90) burnRate = 60;
+                else if (daysPassed < 120) burnRate = 40;
+                else if (daysPassed < 150) burnRate = 20;
+                else burnRate = 10;
+
+                const confirmMsg = burnRate > 10
+                    ? `确定要提取 LP 吗？\n\n⚠️ 您质押了 ${daysPassed} 天，提前提取将会销毁 ${burnRate}% 的代币！`
+                    : `确定要提取 LP 吗？\n\n✅ 您已质押 ${daysPassed} 天，提取只需支付 10% 的销毁费用。`;
+
+                if (!confirm(confirmMsg)) {
+                    return;
+                }
+
+                showNotification('正在处理提取...', 'info');
+
+                const tx = await contract.withdraw();
+                showNotification('等待交易确认...', 'info');
+                await tx.wait();
+
+                showNotification('提取成功！', 'success');
+
+                await Promise.all([
+                    loadUserData(),
+                    loadStats()
+                ]);
+            } catch (error) {
+                console.error('提取失败:', error);
+                if (error.code === 4001) {
+                    showNotification('交易已取消', 'warning');
+                } else {
+                    showNotification('提取失败: ' + (error.reason || error.message), 'error');
+                }
+            }
+        }
+
+        // 加载用户数据
+        async function loadUserData() {
+            if (!userAccount || !contract) return;
+
+            try {
+                const [rewards, stakedInfo, accountSales, walletBalance] = await Promise.all([
+                    contract.earned(userAccount),
+                    contract.userStakedInfo(userAccount),
+                    contract.accountSales(userAccount),
+                    contract.balanceOf(userAccount)
+                ]);
+
+                document.getElementById('my-lp-balance').textContent = parseFloat(ethers.utils.formatEther(stakedInfo.liquidity)).toFixed(4);
+                document.getElementById('my-rewards').textContent = parseFloat(ethers.utils.formatEther(rewards)).toFixed(4);
+                document.getElementById('wallet-balance').textContent = parseFloat(ethers.utils.formatEther(walletBalance)).toFixed(4);
+
+                const stakeTimeEl = document.getElementById('stake-time');
+                if (stakedInfo.updatedAt.toNumber() > 0) {
+                    const stakeDate = new Date(stakedInfo.updatedAt.toNumber() * 1000);
+                    const year = stakeDate.getFullYear();
+                    const month = String(stakeDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(stakeDate.getDate()).padStart(2, '0');
+                    const hours = String(stakeDate.getHours()).padStart(2, '0');
+                    const minutes = String(stakeDate.getMinutes()).padStart(2, '0');
+                    const seconds = String(stakeDate.getSeconds()).padStart(2, '0');
+                    stakeTimeEl.textContent = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                } else {
+                    stakeTimeEl.textContent = '--';
+                }
+
+                const purchasedAmount = parseFloat(ethers.utils.formatEther(accountSales));
+                const remainingAmount = contractMaxAmount - purchasedAmount;
+
+                document.getElementById('purchased-amount').textContent = purchasedAmount.toFixed(2) + ' OKB';
+                document.getElementById('remaining-amount').textContent = remainingAmount.toFixed(2) + ' OKB';
+            } catch (error) {
+                console.error('加载用户数据失败:', error);
+            }
+        }
+
+        // 获取 OKB 价格
+        async function getOKBPrice() {
+            try {
+                const response = await fetch('https://www.okx.com/api/v5/market/ticker?instId=OKB-USDT');
+                const data = await response.json();
+
+                if (data && data.code === '0' && data.data && data.data.length > 0) {
+                    const price = parseFloat(data.data[0].last);
+                    if (price > 0) {
+                        okbPriceUSD = price;
+                        console.log('OKB Price updated:', okbPriceUSD);
+                        return okbPriceUSD;
+                    }
+                }
+            } catch (error) {
+                console.warn('获取 OKB 价格失败 (可能是 CORS), 使用默认值:', error);
+            }
+            return okbPriceUSD; // Return default 170 if fetch fails
+        }
+
+        // 加载统计数据
+        async function loadStats() {
+            if (!contract) {
+                console.log('Contract not initialized in loadStats');
+                return;
+            }
+
+            try {
+                console.log('Loading stats...');
+                const [priceResult, burnedAmount, pairAddress, lpHolderCount] = await Promise.all([
+                    getOKBPrice(),
+                    contract.balanceOf('0x000000000000000000000000000000000000dEaD'),
+                    contract.uniswapPair(),
+                    contract.lpHolder()
+                ]);
+
+                console.log('Pair Address:', pairAddress);
+
+                // 通过 pair reserve 计算价格
+                const pairContract = new ethers.Contract(pairAddress, PAIR_ABI, provider);
+                const [token0Address, token1Address, reserves] = await Promise.all([
+                    pairContract.token0(),
+                    pairContract.token1(),
+                    pairContract.getReserves()
+                ]);
+
+                const reserve0 = parseFloat(ethers.utils.formatEther(reserves.reserve0));
+                const reserve1 = parseFloat(ethers.utils.formatEther(reserves.reserve1));
+
+                console.log('Reserves:', reserve0, reserve1);
+
+                // 判断哪个是 LABUBU token，计算价格
+                let priceInOKB;
+                if (token0Address.toLowerCase() === CONTRACT_ADDRESS.toLowerCase()) {
+                    // token0 是 LABUBU，token1 是 OKB
+                    priceInOKB = reserve1 / reserve0;
+                } else {
+                    // token1 是 LABUBU，token0 是 OKB
+                    priceInOKB = reserve0 / reserve1;
+                }
+
+                console.log('Price in OKB:', priceInOKB);
+                console.log('OKB Price:', okbPriceUSD);
+
+                const priceInUSD = priceInOKB * okbPriceUSD;
+                console.log('Price in USD:', priceInUSD);
+
+                document.getElementById('token-price-usd').textContent = formatPrice(priceInUSD);
+
+                document.getElementById('burned-amount').textContent = formatNumber(parseFloat(ethers.utils.formatEther(burnedAmount)), 2);
+
+                // Update LP Holder count
+                document.getElementById('lp-holder-count').textContent = lpHolderCount.toString();
+
+            } catch (error) {
+                console.error('加载统计数据失败:', error);
+            }
+        }
+
+        // 显示通知
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' :
+                    type === 'error' ? '#ef4444' :
+                        type === 'warning' ? '#f59e0b' : '#3b82f6'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 2000;
+                font-size: 14px;
+                font-weight: 500;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // 初始化公共数据
+        async function initPublicData() {
+            let attempts = 0;
+            while (typeof ethers === 'undefined' && attempts < 50) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+
+            if (typeof ethers === 'undefined') {
+                console.error('Ethers.js load failed');
+                return;
+            }
+
+            try {
+                if (typeof window.ethereum !== 'undefined') {
+                    // Use MetaMask provider if available
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                } else {
+                    // Fallback to read-only RPC
+                    console.log('Using read-only RPC provider');
+                    provider = new ethers.providers.JsonRpcProvider('https://rpc.xlayer.tech');
+                }
+
+                // Use read-only provider for contract calls
+                contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+
+                await Promise.all([
+                    loadContractConfig(),
+                    loadStats()
+                ]);
+            } catch (error) {
+                console.error('初始化公共数据失败:', error);
+            }
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            initPublicData();
+        });
+
+        // 定时刷新
+        let refreshTimer = null;
+        let isRefreshing = false;
+
+        function startAutoRefresh() {
+            if (refreshTimer) {
+                clearInterval(refreshTimer);
+            }
+
+            refreshTimer = setInterval(async () => {
+                if (isRefreshing) return;
+
+                try {
+                    isRefreshing = true;
+                    if (userAccount && contract) {
+                        await Promise.all([loadUserData(), loadStats()]);
+                    } else if (contract) {
+                        await loadStats();
+                    }
+                } catch (error) {
+                    console.error('定时刷新失败:', error);
+                } finally {
+                    isRefreshing = false;
+                }
+            }, 30000);
+        }
+
+        startAutoRefresh();
+
+        // 格式化数字
+        function formatNumber(num, decimals = 2) {
+            if (num === null || num === undefined || isNaN(num)) {
+                return '0';
+            }
+
+            num = parseFloat(num);
+
+            if (num >= 1e9) return (num / 1e9).toFixed(decimals) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(decimals) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(decimals) + 'K';
+            return num.toFixed(decimals);
+        }
+
+        // 格式化价格
+        function formatPrice(price) {
+            if (price === null || price === undefined || isNaN(price)) {
+                return '0';
+            }
+
+            price = parseFloat(price);
+
+            if (price === 0) return '0';
+            if (price >= 1) return price.toFixed(4);
+
+            // 转换为字符串进行分析
+            let priceStr = price.toFixed(20); // 获取足够多的小数位
+
+            // 分离整数和小数部分
+            const parts = priceStr.split('.');
+            if (parts.length < 2) return priceStr;
+
+            const integerPart = parts[0];
+            let decimalPart = parts[1];
+
+            // 去除尾部的0
+            decimalPart = decimalPart.replace(/0+$/, '');
+
+            // 匹配小数点后连续的0
+            const match = decimalPart.match(/^(0+)(.*)$/);
+
+            if (!match) {
+                // 没有前导0，直接返回
+                return parseFloat(price).toFixed(6);
+            }
+
+            const leadingZeros = match[1];
+            const remainingDigits = match[2];
+            const zeroCount = leadingZeros.length;
+
+            // 只有当连续0的个数大于等于8时才使用{n}表示 (User requested to show small numbers)
+            if (zeroCount >= 8) {
+                // 取剩余数字的前6位
+                const significantDigits = remainingDigits.substring(0, 6);
+                return `${integerPart}.0{${zeroCount}}${significantDigits}`;
+            }
+
+            // 少于8个0，正常显示，保留6位有效数字
+            const displayDigits = remainingDigits.substring(0, 6);
+            return `${integerPart}.${leadingZeros}${displayDigits}`;
+        }
+    </script>
+
+    <!-- Ethers.js v5 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</body>
+
+</html>
